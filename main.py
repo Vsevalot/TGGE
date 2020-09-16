@@ -52,6 +52,9 @@ if __name__ == "__main__":
                 if event.key == ESCAPE_KEY:
                     running = False
 
+                """
+                Movement control
+                """
                 if event.key == W_KEY:  # Move up key
                     if player.y > 1:
                         player.y -= PLAYER_STEP

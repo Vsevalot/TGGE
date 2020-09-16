@@ -19,6 +19,6 @@ class model():
     def get_coordinates(self) -> Tuple[int, int]:
         return self.x, self.y
 
-    def change_coordinates(self) -> None:
+    def update_coordinates(self) -> None:
         self.x += self.x_velocity
         self.y += self.y_velocity
