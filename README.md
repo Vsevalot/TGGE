@@ -5,7 +5,7 @@
 ![The Greatest logo gonna be here](https://github.com/Vsevalot/TGGE/blob/master/images/logo.png "TGGE")
 
 A massive open-source project involved over 1.999999 people all over the world.
-It's gonna change the gamedev forever.
+It's gonna change the gamedev **forever**.
 
 ### THE STUFF:
 - Python
