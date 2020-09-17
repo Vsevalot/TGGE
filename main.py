@@ -66,7 +66,7 @@ def prepare_models() -> List[Model]:
 
     walls = [Model(path_to_wall, 40 * randint(1, 10) + 1, 40 * randint(1, 10) + 1) for i in range(10)]
     walls = [w for w in walls if w.get_coordinates() not in [m.get_coordinates for m in walls]]  # remove dublicate
-
+    
     return [player, rock, wall] + walls
 
 
@@ -104,7 +104,6 @@ def run_game_loop(display: pygame.Surface) -> None:
                                     if m.is_movable():
                                         if m.y > 1:
                                             m.set_y_coordinate(m.y - PLAYER_STEP)
-                                            for
                 elif (event.key == D_KEY) or (event.key == RIGHT_KEY):  # Move right key
                     pass
                 elif (event.key == S_KEY) or (event.key == DOWN_KEY):  # Move down key
