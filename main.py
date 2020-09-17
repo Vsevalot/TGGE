@@ -104,7 +104,7 @@ def run_game_loop(display: pygame.Surface) -> None:
                                     if m.is_movable():
                                         if m.y > 1:
                                             m.set_y_coordinate(m.y - PLAYER_STEP)
-                                            for 
+                                            for
                 elif (event.key == D_KEY) or (event.key == RIGHT_KEY):  # Move right key
                     pass
                 elif (event.key == S_KEY) or (event.key == DOWN_KEY):  # Move down key
