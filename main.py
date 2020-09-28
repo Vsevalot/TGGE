@@ -1,7 +1,6 @@
 import pygame
-from classes.models import Player
+from classes.models import Model
 from classes.Field import Field
-from PIL import Image
 
 
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
@@ -20,48 +19,46 @@ RIGHT_KEY = 275
 LEFT_KEY = 276
 PLAYER_STEP = 40
 
-
-def draw_grid(surface: pygame.Surface, surface_width: int, surface_height: int, cell_size: int) -> None:
-    """
-    Draws grid to make positioning easier
-    :param surface: game display
-    :param surface_width: max x coordinate size of the display - width (px)
-    :param surface_height: max y coordinate size of the display - height (px)
-    :param cell_size: size of a cell on the grid (px)
-    :return: None
-    """
-    for i in range(surface_width // cell_size):
-        pygame.draw.line(surface, BLACK_RGB, (i * cell_size, 0), (i * cell_size, surface_height))
-    for k in range(surface_height // cell_size):
-        pygame.draw.line(surface, BLACK_RGB, (0, k * cell_size), (surface_width, k * cell_size))
-
-
-def get_player():
-    player = Player(field_x=3, field_y=1)
-    return player
+PATH_TO_WALL = "images/wall.jpg"
+PATH_TO_BOX = "images/rock.bmp"
+PATH_TO_FOE = "images/definitely_an_imperial_trooper.png"
+PATH_TO_EMPTY = "images/grass.png"
+PATH_TO_PLAYER = "images/frames/ErWiNom_1x1.png"
+PATH_TO_BACKGROUND = "images/background.png"
+PATH_TO_FLOOR = "images/floor.png"
 
 
 def prepare_field(path_to_field: str, cell_size: int) -> Field:
     field = Field(path_to_field=path_to_field, cell_size=cell_size)
-    path_to_background = "images/background.png"
-    field.set_background(pygame.image.load(path_to_background))
-    path_to_floor = "images/floor.png"
-    floor = Image.open(path_to_floor)
+    field.set_background(pygame.image.load(PATH_TO_BACKGROUND))
+
+    floor_surface = pygame.image.load(PATH_TO_FLOOR)
     floor_x = field.width * field.cell_size
     floor_y = field.height * field.cell_size
-    floor = floor.resize((floor_x, floor_y))
-    path_to_new_floor = f"images/floor{floor_x}x{floor_y}.png"
-    floor.save(path_to_new_floor)
-    field.set_floor(pygame.image.load(path_to_new_floor))
-    player = get_player()
-    field.add_player(player, 3, 1)
-    player.set_field(field)
+    field.set_floor(floor_surface.subsurface((0, 0, floor_x, floor_y)))
+
+    field.get_player().set_field(field)
+
+    for i in range(field.width):
+        for k in range(field.height):
+            path_to_frame = ''
+            if field[i][k].type == 'w':
+                path_to_frame = str(PATH_TO_WALL)
+            elif field[i][k].type == 'b':
+                path_to_frame = str(PATH_TO_BOX)
+            elif field[i][k].type == 'f':
+                path_to_frame = str(PATH_TO_FOE)
+            elif field[i][k].type == "p":
+                path_to_frame = str(PATH_TO_PLAYER)
+            if path_to_frame != '':
+                field[i][k].add_frame(path_to_frame, "idle")
+                field[i][k].set_current_frame("idle")
 
     # Centre field
     if field.width * cell_size < SCREEN_WIDTH and field.height * cell_size < SCREEN_HEIGHT:
         x_shift = (SCREEN_WIDTH - field.width * cell_size) // 2
         y_shift = (SCREEN_HEIGHT - field.height * cell_size) // 2
-        field.shift_field(x_shift, y_shift)
+        field.set_shift(x_shift, y_shift)
     return field
 
 
@@ -71,15 +68,13 @@ def run_game_loop(display: pygame.Surface) -> None:
     :param display: game display from pygame.display.set_mode
     :return: None
     """
-    # Setup game loop
     clock = pygame.time.Clock()
     running = True
 
     path_to_field = "test_field.field"
     field = prepare_field(path_to_field=path_to_field, cell_size=CELL_SIZE)
-    player = field.get_player()
+    player: Model = field.get_player()
     display.blit(field.background, (0, 0))
-    # draw_grid(display, SCREEN_WIDTH, SCREEN_HEIGHT, CELL_SIZE)
 
     while running:
         for event in pygame.event.get():
@@ -99,9 +94,9 @@ def run_game_loop(display: pygame.Surface) -> None:
                     player.move("left")
 
         display.blit(field.floor, (0 + field.shift_x, 0 + field.shift_y))
-        for i in range(field.height):
-            for k in range(field.width):
-                if field[i][k] is None:
+        for i in range(field.width):
+            for k in range(field.height):
+                if field[i][k].type == ' ':
                     continue
                 display.blit(field[i][k].frames["current"], field[i][k].get_screen_position())
         pygame.display.update()
@@ -109,10 +104,8 @@ def run_game_loop(display: pygame.Surface) -> None:
 
 
 if __name__ == "__main__":
-    # Setup display
     pygame.init()
     display = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
     pygame.display.set_caption("TheGreatestGameEver")
     run_game_loop(display)
     pygame.quit()
-    quit(0)
